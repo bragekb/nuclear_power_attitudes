@@ -10,9 +10,6 @@ output:
 knitr:
   opts_chunk:
     cache: true
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, output_file = "index.html", encoding = encoding)
-})
 ---
 
 ```{r Setup & libraries, include=FALSE}
