@@ -7,6 +7,12 @@ output:
     toc: true
     toc_float: true
     number_sections: true
+knitr:
+  opts_chunk:
+    cache: true
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, output_file = "index.html", encoding = encoding)
+})
 ---
 
 ```{r Setup & libraries, include=FALSE}
@@ -400,8 +406,22 @@ plot(CentStability_undec_neg_attitudes_network, "Strength", perNode = TRUE, subs
 plot(Bootnet_undec_neg_attitudes_network, statistics = c("Strength"), plot = "difference")
 ```
 
+# Positive vs. undecided/negative network
+```{r Plot combined network, echo=FALSE}
+par(mfrow = c(1, 2))
+plot(network2_pos_att, theme = "colorblind", layout = network_general_public_plot_layout, title = "Positive attitude network",
+     groups = network_general_public_communities_grouplabels, legend = FALSE)
+plot(network4_undec_neg_att, theme = "colorblind", layout = network_general_public_plot_layout, title = "Undecided/negative attitude network",
+     groups = network_general_public_communities_grouplabels, 
+     nodeNames = network_general_public_communities_nodenames ,legend = FALSE)
+```
+```{r Plot combined centrality, echo=FALSE}
+centralityPlot(list("Positive attitude" = network2_pos_att, "Undecided/negative attitude" = network4_undec_neg_att), scale = "raw")
+```
 
-## Statistical comparison: positive vs. undecided/negative
+
+
+## Statistical comparison
 ```{r Statistical comparison of positive vs. undecided/negative network, include=FALSE, cache=TRUE}
 set.seed(123)
 comparing_pos_neg_att_nct_results <- NCT(
@@ -411,3 +431,18 @@ comparing_pos_neg_att_nct_results <- NCT(
 comparing_pos_neg_att_nct_results
 comparing_pos_neg_att_nct_results$einv.pvals[which(comparing_pos_neg_att_nct_results$einv.pvals[,3] < 0.05), ]
 ```
+```{r Write SVG for positive vs. undecided/negative network, include=FALSE}
+svg(filename = here(output_path, "positive_and_undec_neg_attitudes", "combined_network_plots.svg"), width = 12, height = 6)
+par(mfrow = c(1, 2))
+plot(network2_pos_att, theme = "colorblind", layout = network_general_public_plot_layout, title = "Positive attitude network",
+     groups = network_general_public_communities_grouplabels, legend = FALSE)
+plot(network4_undec_neg_att, theme = "colorblind", layout = network_general_public_plot_layout, title = "Undecided/negative attitude network",
+     groups = network_general_public_communities_grouplabels, 
+     nodeNames = network_general_public_communities_nodenames ,legend = FALSE)
+dev.off()
+#Write centrality plot SVG
+svg(filename = here(output_path, "positive_and_undec_neg_attitudes", "centralities.svg"))
+centralityPlot(list("Positive attitude" = network2_pos_att, "Undecided/negative attitude" = network4_undec_neg_att), scale = "raw")
+dev.off()
+```
+
